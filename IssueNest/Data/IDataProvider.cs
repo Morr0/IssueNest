@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace IssueNest.Data
 {
-    interface IDataProvider
+    public interface IDataProvider
     {
-        List<User> GetUsers();
-        User GetUserById(int id);
-        bool CreateNewUser(User user);
-        bool DeleteUser(User user);
-        bool UpdateUser(User user);
+        Task<List<User>> GetUsers();
+        Task<User> GetUserById(int id);
+        Task<bool> CreateNewUser(User user);
+        Task<bool> DeleteUser(User user);
+        Task<bool> UpdateUser(User user);
 
     }
 }
