@@ -19,6 +19,9 @@ namespace IssueNest.Models
         public Project Project { get; set; }
 
         [NotNull]
+        public string Description { get; set; }
+
+        [NotNull]
         public string IssueFrom { get; set; }
         [NotNull]
         public string IssueType { get; set; }

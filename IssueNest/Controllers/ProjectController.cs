@@ -8,6 +8,7 @@ using IssueNest.Data;
 using IssueNest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IssueNest.Controllers
 {
@@ -51,6 +52,20 @@ namespace IssueNest.Controllers
             }
 
             return BadRequest();
+        }  
+        
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetProjectsByUserId(int userId)
+        {
+            Console.WriteLine("HIt");
+            if (await db.Users.FindAsync(userId) == null)
+                return NotFound();
+
+
+            //List<Project> list = await db.Projects.FromSqlInterpolated($"SELECT * FROM \"Issues\" WHERE UserId = {userId}")
+            List<Project> list = await db.Projects.Where(p => p.UserId == userId)
+                .ToListAsync();
+            return Ok(list);
         }
     }
 }
