@@ -23,16 +23,14 @@ namespace IssueNest.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser()
         {
-            if (Request.Headers.ContainsKey("name") && Request.Headers.ContainsKey("email") 
+            if (Request.Headers.ContainsKey("name") && Request.Headers.ContainsKey("email")
                 && Request.Headers.ContainsKey("password"))
             {
                 Request.Headers.TryGetValue("name", out var name);
                 Request.Headers.TryGetValue("email", out var email);
                 Request.Headers.TryGetValue("password", out var password);
 
-                
-
-                User user = new User{
+                User user = new User {
                     Name = name,
                     Email = email,
                     Password = password
@@ -40,11 +38,42 @@ namespace IssueNest.Controllers
 
                 await db.Users.AddAsync(user);
                 await db.SaveChangesAsync();
-                Console.WriteLine("Hello");
+
                 return Ok();
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            User user = await db.Users.FindAsync(id);
+            if (user != null)
+            {
+                return Ok(new
+                {
+                    name = user.Name,
+                    email = user.Email,
+                    timestamp = user.Timestamp
+                });
+            }
+
+            return NotFound();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            User user = await db.Users.FindAsync(id);
+            if (user != null)
+            {
+                db.Users.Remove(user);
+                await db.SaveChangesAsync();
+                return Ok();
+            }
+
+            return NotFound();
         }
     }
 }
