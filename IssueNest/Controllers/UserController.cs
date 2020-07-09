@@ -13,9 +13,9 @@ namespace IssueNest.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IDataProvider db;
+        private IssuesDBContext db;
 
-        public UserController(IDataProvider db)
+        public UserController(IssuesDBContext db)
         {
             this.db = db;
         }
@@ -30,16 +30,18 @@ namespace IssueNest.Controllers
                 Request.Headers.TryGetValue("email", out var email);
                 Request.Headers.TryGetValue("password", out var password);
 
+                
+
                 User user = new User{
                     Name = name,
                     Email = email,
                     Password = password
                 };
 
-                if (await db.CreateNewUser(user))
-                    return Ok();
-
-                return StatusCode(500);
+                await db.Users.AddAsync(user);
+                await db.SaveChangesAsync();
+                Console.WriteLine("Hello");
+                return Ok();
             }
 
             return BadRequest();
