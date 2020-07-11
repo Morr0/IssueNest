@@ -19,10 +19,17 @@ namespace IssueNest.Models
         public Project Project { get; set; }
 
         [NotNull]
+        public string Title { get; set; }
+
         public string Description { get; set; }
 
         [NotNull]
         public string IssueFrom { get; set; }
+
+        public string RepositoryUrl { get; set; }
+
+        public string IssueUrl { get; set; }
+
         [NotNull]
         public string IssueType { get; set; }
         [NotNull]
