@@ -41,7 +41,6 @@ namespace IssueNest.Controllers
         [HttpPost("{projectId}")]
         public async Task<IActionResult> CreateIssue(int projectId)
         {
-            Console.WriteLine("Got HIIT");
             if (await db.Projects.FindAsync(projectId) == null)
                 return NotFound();
 
@@ -74,27 +73,26 @@ namespace IssueNest.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateIssue(int id)
         {
-            if (await db.Issues.FindAsync(id) != null)
+            try
             {
-                try
-                {
-                    Request.Headers.TryGetValue("state", out var _state);
-                    // Check if valid state
-                    Enum.TryParse(_state.ToString().ToUpper(), out IssueState state);
+                Request.Headers.TryGetValue("state", out var _state);
+                // Check if valid state
+                Enum.TryParse(_state.ToString().ToUpper(), out IssueState state);
 
-                    Issue issue = new Issue { Id = id, IssueState = state.ToString() };
-                    //db.Attach<Issue>(issue).Property(i => i.IssueState).IsModified = true;
-                    db.Entry(issue).Property(p => p.IssueState).IsModified = true;
+                //Issue issue = new Issue { Id = id, IssueState = state.ToString() };
+                Issue issue = await db.Issues.FirstOrDefaultAsync(p => p.Id == id);
+                if (issue != null)
+                {
+                    issue.IssueState = state.ToString();
                     await db.SaveChangesAsync();
-
                     return Ok();
-                } catch (ArgumentException)
-                {
-                    return BadRequest();
                 }
+                
+                return NotFound();
+            } catch (ArgumentException)
+            {
+                return BadRequest();
             }
-
-            return NotFound();
         }
     }
 }

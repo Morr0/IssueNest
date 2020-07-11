@@ -17,7 +17,7 @@ namespace IssueNestTesting
 
         // From https://developer.github.com/webhooks/event-payloads/#issues
         [Fact]
-        public async void TestGituhbPayload()
+        public async void TestGithubPayload()
         {
             string text = await File.ReadAllTextAsync("../../../Jsons/hook_issue_github_payload.json");
             JsonDocument doc = JsonDocument.Parse(text);
