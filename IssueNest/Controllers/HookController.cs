@@ -28,10 +28,12 @@ namespace IssueNest.Controllers
         [HttpPost("{hook}")]
         public async Task<IActionResult> OnHook(string hook, [FromBody] JsonElement json)
         {
-            hookService.HandleGithub(json);
             if (db.Projects.Where(p => p.Hook == hook).Any())
             {
-                // DO the stuff
+                if (hookService.VerifyGithubHeaders(Request.Headers))
+                {
+                    HookIssue hookIssue = hookService.HandleGithubPayload(json);
+                }
                 
             }
 

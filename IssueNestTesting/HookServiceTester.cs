@@ -22,7 +22,7 @@ namespace IssueNestTesting
             string text = await File.ReadAllTextAsync("../../../Jsons/hook_issue_github_payload.json");
             JsonDocument doc = JsonDocument.Parse(text);
 
-            HookIssue hookIssue = service.HandleGithub(doc.RootElement);
+            HookIssue hookIssue = service.HandleGithubPayload(doc.RootElement);
             Console.WriteLine(hookIssue);
 
             Assert.True(hookIssue.Issue.Title == "Spelling error in the README file", "Title is wrong");

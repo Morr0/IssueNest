@@ -1,6 +1,7 @@
 ﻿using IssueNest.Data;
 using IssueNest.Models;
 using IssueNest.Utils;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,19 @@ namespace IssueNest.Services
 {
     public class HookService : IHookService
     {
-        public HookIssue HandleGithub(JsonElement payload)
+        public bool VerifyGithubHeaders(IHeaderDictionary headers)
+        {
+            // TODO implement
+            return true;
+        }
+
+        public HookIssue HandleGithubPayload(JsonElement payload)
         {
             HookIssue hookIssue = new HookIssue
             {
                 IssueFrom = IssueFrom.GITHUB,
                 Issue = new Issue(),
-                IssueType = IssueType.MINOR,
+                IssueType = IssueType.MINOR,      
             };
 
             if (payload.ValueKind == JsonValueKind.Object)

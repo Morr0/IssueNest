@@ -20,6 +20,8 @@ namespace IssueNest.Models
         [NotNull]
         public string Name { get; set; }
 
+        public string RepositoryUrl { get; set; }
+
         [NotNull]
         public string Hook { get; set; }
 
