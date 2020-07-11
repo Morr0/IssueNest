@@ -56,8 +56,10 @@ namespace IssueNest.Controllers
 
                             await db.SaveChangesAsync();
                         }
-
-                        return BadRequest();
+                        else
+                        {
+                            return BadRequest();
+                        }
                     } else // A new issue
                     {
                        db.Issues.Add(hookIssue.Issue);
