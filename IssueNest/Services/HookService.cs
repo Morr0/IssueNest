@@ -11,24 +11,20 @@ namespace IssueNest.Services
 {
     public class HookService : IHookService
     {
-        IssuesDBContext db;
-        public HookService(IssuesDBContext db)
-        {
-            this.db = db;
-        }
-
         public HookIssue HandleGithub(JsonElement payload)
         {
-            HookIssue hookIssue = new HookIssue { };
+            HookIssue hookIssue = new HookIssue
+            {
+                IssueFrom = IssueFrom.GITHUB,
+                Issue = new Issue(),
+                IssueType = IssueType.MINOR,
+            };
 
             if (payload.ValueKind == JsonValueKind.Object)
             {
-                // Base values
-                bool existingIssue = false; // true -> the issue is already there so we update it
-                IssueState? newState = null;
-
                 foreach (JsonProperty prop in payload.EnumerateObject())
                 {
+                    // Issue's current action
                     if (prop.Name == "action")
                     {
                         // Value of action
@@ -36,23 +32,55 @@ namespace IssueNest.Services
                         // From Github docs https://developer.github.com/webhooks/event-payloads/#issues
                         switch (prop.Value.GetString())
                         {
-                            case "opened":
                             case "reopened":
                             case "unlocked":
-                                newState = IssueState.EXISTING;
+                                hookIssue.IssueState = IssueState.EXISTING;
+                                break;
+                            case "opened":
+                                hookIssue.Existing = false;
+                                hookIssue.IssueState = IssueState.EXISTING;
                                 break;
                             case "deleted":
-                                newState = IssueState.DELETED;
+                                hookIssue.IssueState = IssueState.DELETED;
                                 break;
                             case "closed": 
                             case "locked":
                             case "transferred":
-                                newState = IssueState.CLOSED;
+                                hookIssue.IssueState = IssueState.CLOSED;
                                 break;
                         }
                     }
 
+                    // Issue object
+                    if (prop.Name == "issue")
+                    {
+                        foreach (JsonProperty issueProp in prop.Value.EnumerateObject())
+                        {
+                            // URL of the issue
+                            if (issueProp.Name == "url")
+                            {
+                                hookIssue.Issue.IssueUrl = issueProp.Value.GetString();
+                            }
 
+                            // Repository URL
+                            if (issueProp.Name == "repository_url")
+                            {
+                                hookIssue.Issue.RepositoryUrl = issueProp.Value.GetString();
+                            }
+
+                            // Title
+                            if (issueProp.Name == "title")
+                            {
+                                hookIssue.Issue.Title = issueProp.Value.GetString();
+                            }
+
+                            // Description
+                            if (issueProp.Name == "body")
+                            {
+                                hookIssue.Issue.Description = issueProp.Value.GetString();
+                            }
+                        }
+                    }
                 }
             }
 
