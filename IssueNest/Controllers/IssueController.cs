@@ -58,7 +58,7 @@ namespace IssueNest.Controllers
                     ProjectId = projectId,
                     Description = description.ToString(),
                     IssueFrom = IssueFrom.GITHUB.ToString(),
-                    IssueState = IssueState.NEW.ToString(),
+                    IssueState = IssueState.EXISTING.ToString(),
                     IssueType = type.ToString(),
                 });
                 await db.SaveChangesAsync();

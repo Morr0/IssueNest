@@ -19,9 +19,8 @@ namespace IssueNest.Utils
 
     public enum IssueState
     {
-        NEW,
-        PROGRESS,
-        FIXED,
-        IGNORED
+        EXISTING,
+        CLOSED,
+        DELETED
     }
 }
