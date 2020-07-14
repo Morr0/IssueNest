@@ -12,7 +12,6 @@ namespace IssueNest.Services
         public Issue Issue;
 
         public IssueState IssueState;
-        public IssueType IssueType;
         public IssueFrom IssueFrom;
 
         // IF THE ISSUE EXISTED BEFORE

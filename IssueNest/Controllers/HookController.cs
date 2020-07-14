@@ -27,6 +27,7 @@ namespace IssueNest.Controllers
             this.hookService = hookService;
             //this.manager = manager;
         }
+
         [HttpPost("{hook}")]
         public async Task<IActionResult> OnHook(string hook, [FromBody] JsonElement json)
         {
@@ -39,7 +40,6 @@ namespace IssueNest.Controllers
                     // Mapping values
                     hookIssue.Issue.IssueFrom = hookIssue.IssueFrom.ToString();
                     hookIssue.Issue.IssueState = hookIssue.IssueState.ToString();
-                    hookIssue.Issue.IssueType = hookIssue.IssueType.ToString();
 
                     if (hookIssue.Existing) // Prexisting issue to be updated
                     {
@@ -48,7 +48,6 @@ namespace IssueNest.Controllers
                         {
                             toBeUpdatedIssue.IssueFrom = hookIssue.Issue.IssueFrom;
                             toBeUpdatedIssue.IssueState = hookIssue.Issue.IssueState;
-                            toBeUpdatedIssue.IssueType = hookIssue.Issue.IssueType;
                             toBeUpdatedIssue.Title = hookIssue.Issue.Title;
                             toBeUpdatedIssue.Description = hookIssue.Issue.Description;
                             toBeUpdatedIssue.RepositoryUrl = hookIssue.Issue.RepositoryUrl;

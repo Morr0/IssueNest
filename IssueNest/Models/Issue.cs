@@ -31,8 +31,6 @@ namespace IssueNest.Models
         public string IssueUrl { get; set; }
 
         [NotNull]
-        public string IssueType { get; set; }
-        [NotNull]
         public string IssueState { get; set; }
 
         public DateTime Timestamp { get; set; } = DateTime.Now;

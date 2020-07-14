@@ -10,13 +10,6 @@ namespace IssueNest.Utils
         GITHUB
     }
 
-    public enum IssueType
-    {
-        MINOR,
-        SEVERE,
-        FATAL
-    }
-
     public enum IssueState
     {
         EXISTING,

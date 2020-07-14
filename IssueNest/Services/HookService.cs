@@ -23,8 +23,7 @@ namespace IssueNest.Services
             HookIssue hookIssue = new HookIssue
             {
                 IssueFrom = IssueFrom.GITHUB,
-                Issue = new Issue(),
-                IssueType = IssueType.MINOR,      
+                Issue = new Issue(),   
             };
 
             if (payload.ValueKind == JsonValueKind.Object)
