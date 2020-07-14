@@ -16,10 +16,13 @@ namespace IssueNest.Models
     {
         public int Id { get; set; }
         [NotNull]
+        [Required]
         public string Name { get; set; }
         [NotNull]
+        [Required]
         public string Email { get; set; }
         [NotNull]
+        [Required]
         public string Password { get; set; }
 
         public DateTime Timestamp { get; set; } = DateTime.Now;

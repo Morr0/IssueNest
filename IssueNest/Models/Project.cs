@@ -18,6 +18,7 @@ namespace IssueNest.Models
         public int UserId { get; set; }
         public User User { get; set; }
         [NotNull]
+        [Required]
         public string Name { get; set; }
 
         public string RepositoryUrl { get; set; }

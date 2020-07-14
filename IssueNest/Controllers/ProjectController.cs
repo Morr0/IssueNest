@@ -24,46 +24,34 @@ namespace IssueNest.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProject()
+        public async Task<IActionResult> CreateProject([FromBody] Project project)
         {
-            if (Request.Headers.ContainsKey("user_id") && Request.Headers.ContainsKey("name"))
+            if (await db.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == project.UserId) != null)
             {
-                Request.Headers.TryGetValue("user_id", out var _userId);
-                Request.Headers.TryGetValue("name", out var name);
+                project.Hook = Guid.NewGuid().ToString();
 
-                // Validate an int
-                if (!Int32.TryParse(_userId, out int userId))
-                    return BadRequest();
-
-                // Check if the user exists
-                if (await db.Users.FindAsync(userId) == null)
-                    return Unauthorized();
-
-                // Make a new project
-                await db.Projects.AddAsync(new Project
-                {
-                    UserId = userId,
-                    Name = name,
-                    Hook = Guid.NewGuid().ToString(),
-                });
+                await db.Projects.AddAsync(project);
                 await db.SaveChangesAsync();
-
                 return Ok();
             }
 
-            return BadRequest();
+            return NotFound();
         }  
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProject(int id)
+        {
+            Project project = await db.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            return project == null ? (IActionResult) NotFound() : Ok(project);
+        }
         
-        [HttpGet("{userId}")]
+        [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetProjectsByUserId(int userId)
         {
-            Console.WriteLine("HIt");
-            if (await db.Users.FindAsync(userId) == null)
+            if (await db.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == userId) == null)
                 return NotFound();
 
-
-            //List<Project> list = await db.Projects.FromSqlInterpolated($"SELECT * FROM \"Issues\" WHERE UserId = {userId}")
-            List<Project> list = await db.Projects.Where(p => p.UserId == userId)
+            List<Project> list = await db.Projects.AsNoTracking().Where(p => p.UserId == userId)
                 .ToListAsync();
             return Ok(list);
         }

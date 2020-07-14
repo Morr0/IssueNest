@@ -26,34 +26,19 @@ namespace IssueNest.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser()
+        public async Task<IActionResult> CreateUser([FromBody] User user)
         {
-            if (Request.Headers.ContainsKey("name") && Request.Headers.ContainsKey("email")
-                && Request.Headers.ContainsKey("password"))
-            {
-                Request.Headers.TryGetValue("name", out var name);
-                Request.Headers.TryGetValue("email", out var email);
-                Request.Headers.TryGetValue("password", out var password);
-                
-                User user = new User {
-                    Name = name,
-                    Email = email,
-                    Password = BCrypt.Net.BCrypt.EnhancedHashPassword(password, 11),
-                };
+            user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password, 11);
+            await db.Users.AddAsync(user);
+            await db.SaveChangesAsync();
 
-                await db.Users.AddAsync(user);
-                await db.SaveChangesAsync();
-
-                return Ok();
-            }
-
-            return BadRequest();
+            return Ok();
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = await db.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
             if (user != null)
             {
                 return Ok(new
@@ -67,10 +52,11 @@ namespace IssueNest.Controllers
             return NotFound();
         }
 
+        /*
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            User user = await db.Users.FindAsync(id);
+            User user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
             if (user != null)
             {
                 db.Users.Remove(user);
@@ -79,7 +65,7 @@ namespace IssueNest.Controllers
             }
 
             return NotFound();
-        }
+        }*/
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchUser(int id, [FromBody] JsonElement payload)
