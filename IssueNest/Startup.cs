@@ -32,6 +32,7 @@ namespace IssueNest
             services.AddDbContext<IssuesDBContext>();
             //services.AddSingleton<IssuesManager>();
             services.AddTransient<IHookService, HookService>();
+            services.AddSingleton<IUserAuthService, UserAuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

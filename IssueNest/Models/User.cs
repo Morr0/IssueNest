@@ -20,7 +20,6 @@ namespace IssueNest.Models
         [NotNull]
         public string Email { get; set; }
         [NotNull]
-        [NotMapped]
         public string Password { get; set; }
 
         public DateTime Timestamp { get; set; } = DateTime.Now;
