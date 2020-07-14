@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
+using AutoMapper;
 
 namespace IssueNest.Controllers
 {
@@ -18,38 +19,31 @@ namespace IssueNest.Controllers
     {
         private IssuesDBContext db;
         private IUserAuthService userAuth;
+        private IMapper mapper;
 
-        public UserController(IssuesDBContext db, IUserAuthService userAuth)
+        public UserController(IssuesDBContext db, IUserAuthService userAuth, IMapper mapper)
         {
             this.db = db;
             this.userAuth = userAuth;
+            this.mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        public async Task<IActionResult> CreateUser([FromBody] UserWriteDto _user)
         {
+            User user = mapper.Map<User>(_user);
             user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(user.Password, 11);
             await db.Users.AddAsync(user);
             await db.SaveChangesAsync();
 
-            return Ok();
+            return Ok(mapper.Map<UserReadDTO>(user));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
             User user = await db.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-            if (user != null)
-            {
-                return Ok(new
-                {
-                    name = user.Name,
-                    email = user.Email,
-                    timestamp = user.Timestamp
-                });
-            }
-
-            return NotFound();
+            return user == null? (IActionResult) NotFound(): Ok(mapper.Map<UserReadDTO>(user));
         }
 
         /*
@@ -91,12 +85,7 @@ namespace IssueNest.Controllers
 
                     await db.SaveChangesAsync();
 
-                    return Ok(new
-                    {
-                        name = user.Name,
-                        email = user.Email,
-                        timestamp = user.Timestamp
-                    });
+                    return Ok(mapper.Map<UserReadDTO>(user));
                 } 
             }
 

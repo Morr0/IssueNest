@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using IssueNest.Data;
 using IssueNest.Services;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,8 @@ namespace IssueNest
         {
             services.AddControllers();
             services.AddDbContext<IssuesDBContext>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             //services.AddSingleton<IssuesManager>();
             services.AddTransient<IHookService, HookService>();
             services.AddSingleton<IUserAuthService, UserAuthService>();

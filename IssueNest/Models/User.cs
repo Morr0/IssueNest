@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace IssueNest.Models
     public class User
     {
         public int Id { get; set; }
+
         [NotNull]
         [Required]
         public string Name { get; set; }
@@ -27,4 +29,33 @@ namespace IssueNest.Models
 
         public DateTime Timestamp { get; set; } = DateTime.Now;
     }
+
+    public class UserReadDTO
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
+    public class UserWriteDto
+    {
+        [NotNull]
+        [Required]
+        public string Name { get; set; }
+        [NotNull]
+        [Required]
+        public string Email { get; set; }
+        [NotNull]
+        [Required]
+        public string Password { get; set; }
+    }
+
+    public class UserProfile : Profile
+    {
+        public UserProfile()
+        {
+            CreateMap<UserWriteDto, User>();
+            CreateMap<User, UserReadDTO>();
+        }
+    } 
 }
