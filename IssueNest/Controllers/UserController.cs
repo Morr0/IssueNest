@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using IssueNest.Data;
 using IssueNest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
 
 namespace IssueNest.Controllers
 {
@@ -74,6 +78,42 @@ namespace IssueNest.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchUser(int id, [FromBody] JsonElement payload)
+        {
+            if (payload.ValueKind == JsonValueKind.Object)
+            {
+                JsonElement.ObjectEnumerator enumerator = payload.EnumerateObject(); // Calling it twice does not work
+                if (enumerator.Count() > 0)
+                {
+                    User user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
+                    if (user == null)
+                        return NotFound();
+
+                    foreach (JsonProperty prop in enumerator)
+                    {
+                        if (prop.Name == "name")
+                            user.Name = prop.Value.GetString();
+                        if (prop.Name == "email")
+                            user.Email = prop.Value.GetString();
+                        if (prop.Name == "password")
+                            user.Password = prop.Value.GetString();
+                    }
+
+                    await db.SaveChangesAsync();
+
+                    return Ok(new
+                    {
+                        name = user.Name,
+                        email = user.Email,
+                        timestamp = user.Timestamp
+                    });
+                } 
+            }
+
+            return BadRequest();
         }
     }
 }
