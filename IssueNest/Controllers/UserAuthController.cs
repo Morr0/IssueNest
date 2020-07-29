@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
+using IssueNest.Controllers.Payloads;
 using IssueNest.Data;
 using IssueNest.Models;
 using IssueNest.Services;
@@ -29,63 +30,44 @@ namespace IssueNest.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginUser([FromBody] JsonElement payload)
+        public async Task<IActionResult> LoginUser([FromBody] UserAuthLoginPayload payload)
         {
-            Console.WriteLine("Here");
             if (Request.Cookies.ContainsKey("userId"))
                 return BadRequest();
-            Console.WriteLine("Here");
+            
+            User user = await db.Users.FirstOrDefaultAsync(p => p.Email == payload.Email);
+            if (user == null)
+                return NotFound();
 
-            JsonElement.ObjectEnumerator enumerator = payload.EnumerateObject();
-            if (enumerator.Count() > 1)
+            // Checking password hash
+            if (BCrypt.Net.BCrypt.EnhancedVerify(payload.Password, user.Password))
             {
-                Console.WriteLine(payload.GetRawText());
-                // Getting json payload (email, password)
-                string email = null, password = null;
-                foreach (JsonProperty prop in enumerator)
-                {
-                    if (prop.Name == "email")
-                        email = prop.Value.GetString();
-                    if (prop.Name == "password")
-                        password = prop.Value.GetString();
-                }
+                if (!userAuth.Login(user.Id))
+                    return NoContent();
 
-                if (email != null && password != null)
-                {
-                    User user = await db.Users.FirstOrDefaultAsync(p => p.Email == email);
-                    if (user == null)
-                        return NotFound();
+                CookieOptions cookie = new CookieOptions();
+                cookie.HttpOnly = true;
+                cookie.Secure = Request.IsHttps;
+                cookie.Expires = DateTime.Now.AddHours(1);
+                Response.Cookies.Append("userId", $"{user.Id}", cookie);
 
-                    // Checking password hash
-                    if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
-                    {
-                        if (!userAuth.Login(user.Id))
-                            return NoContent();
-
-                        CookieOptions cookie = new CookieOptions();
-                        cookie.HttpOnly = true;
-                        cookie.Secure = Request.IsHttps;
-                        cookie.Expires = DateTime.Now.AddHours(1);
-                        Response.Cookies.Append("userId", $"{user.Id}", cookie);
-
-                        return Ok(_mapper.Map<UserReadDTO>(user));
-                    }
-
-                    return Unauthorized();
-                }
+                return Ok(_mapper.Map<UserReadDTO>(user));
             }
 
-            return BadRequest();
+            return Unauthorized();
         }
 
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public IActionResult Logout([FromBody] UserAuthLogoutPayload payload)
         {
             if (!Request.Cookies.ContainsKey("userId"))
-                return Unauthorized();
+                return StatusCode(403);
 
             Request.Cookies.TryGetValue("userId", out string _id);
             int id = int.Parse(_id);
+
+            if (payload.Id != id)
+                return StatusCode(403);
 
             userAuth.Logout(id);
             Response.Cookies.Delete("userId");
