@@ -30,13 +30,6 @@ namespace IssueNest.Models
         public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 
-    public class UserReadDTO
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public DateTime Timestamp { get; set; }
-    }
-
     public class UserWriteDto
     {
         [NotNull]
@@ -49,13 +42,11 @@ namespace IssueNest.Models
         [Required]
         public string Password { get; set; }
     }
-
-    public class UserProfile : Profile
+    public class UserReadDTO
     {
-        public UserProfile()
-        {
-            CreateMap<UserWriteDto, User>();
-            CreateMap<User, UserReadDTO>();
-        }
-    } 
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
 }

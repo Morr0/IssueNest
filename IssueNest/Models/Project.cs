@@ -29,4 +29,26 @@ namespace IssueNest.Models
 
         public DateTime Timestamp { get; set; } = DateTime.Now;
     }
+
+    public class ProjectWriteDTO
+    {
+        [ForeignKey("User")]
+        [NotNull]
+        [Required]
+        public int UserId { get; set; }
+        [NotNull]
+        [Required]
+        public string Name { get; set; }
+        public string RepositoryUrl { get; set; }
+    }
+
+    public class ProjectReadDTO
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string Name { get; set; }
+        public string RepositoryUrl { get; set; }
+        public string Hook { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+    }
 }

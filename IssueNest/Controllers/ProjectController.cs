@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using AutoMapper;
 using IssueNest.Data;
 using IssueNest.Models;
 using Microsoft.AspNetCore.Http;
@@ -18,14 +19,19 @@ namespace IssueNest.Controllers
     {
 
         private IssuesDBContext db;
-        public ProjectController(IssuesDBContext db)
+        private IMapper _mapper;
+
+        public ProjectController(IssuesDBContext db, IMapper mapper)
         {
             this.db = db;
+            _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProject([FromBody] Project project)
+        public async Task<IActionResult> CreateProject([FromBody] ProjectWriteDTO _project)
         {
+            Project project = _mapper.Map<Project>(_project);
+
             if (await db.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == project.UserId) != null)
             {
                 project.Hook = Guid.NewGuid().ToString();
@@ -42,7 +48,7 @@ namespace IssueNest.Controllers
         public async Task<IActionResult> GetProject(int id)
         {
             Project project = await db.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-            return project == null ? (IActionResult) NotFound() : Ok(project);
+            return project == null ? (IActionResult) NotFound() : Ok(_mapper.Map<ProjectReadDTO>(project));
         }
         
         [HttpGet("user/{userId}")]
@@ -53,7 +59,7 @@ namespace IssueNest.Controllers
 
             List<Project> list = await db.Projects.AsNoTracking().Where(p => p.UserId == userId)
                 .ToListAsync();
-            return Ok(list);
+            return Ok(_mapper.Map<List<ProjectReadDTO>>(list));
         }
     }
 }
