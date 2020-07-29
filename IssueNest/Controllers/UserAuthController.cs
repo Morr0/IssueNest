@@ -33,8 +33,8 @@ namespace IssueNest.Controllers
         public async Task<IActionResult> LoginUser([FromBody] UserAuthLoginPayload payload)
         {
             if (Request.Cookies.ContainsKey("userId"))
-                return BadRequest();
-            
+                return StatusCode(403);
+
             User user = await db.Users.FirstOrDefaultAsync(p => p.Email == payload.Email);
             if (user == null)
                 return NotFound();

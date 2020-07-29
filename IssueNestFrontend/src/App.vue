@@ -1,11 +1,11 @@
 <template>
     <div id="app">
         <Login v-if="!loggedIn" />
-        <button type="button" v-if="loggedIn">Logout</button>
+        <button type="button" v-if="loggedIn" @click.prevent="logout">Logout</button>
 
         <div v-if="loggedIn">
             Projects
-            <Projects />
+            <!-- <Projects /> -->
         </div>
     </div>
 </template>
@@ -18,16 +18,37 @@ export default {
         Login
     },
     data(){
+        document.state = this.$store.state;
         return {
             currentView: "home",
         };
     },
     computed: {
+        user: function (){
+            return this.$store.state.user;
+        },
         loggedIn: function (){
-            if (this.$store.state.user)
+            if (this.user)
                 return this.$store.state.user.id;
             
             return false;
+        }
+    },
+    methods: {
+        logout: async function (){
+            const res = await fetch("https://localhost:5001/api/auth/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: this.user.id,
+                }),
+                credentials: "include"
+            });
+
+            // logout in any case
+            this.$store.commit("setUser", undefined)
         }
     }
 }

@@ -35,10 +35,11 @@ export default {
             });
             if (res.status === 200){
                 const data = await res.json();
-                return this.$store.commit("setUser", data.user);
-            }
-
-            alert("Please enter the correct credentials");
+                console.log(data);
+                return this.$store.commit("setUser", data);
+            } 
+            else if (res.status === 400)
+                return alert("Please enter the correct credentials");
         }
     },
     computed: {
