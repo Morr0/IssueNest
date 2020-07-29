@@ -24,7 +24,10 @@ export default {
     },
     computed: {
         loggedIn: function (){
-            return this.$store.state.userId;
+            if (this.$store.state.user)
+                return this.$store.state.user.id;
+            
+            return false;
         }
     }
 }

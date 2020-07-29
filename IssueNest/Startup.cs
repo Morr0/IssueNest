@@ -31,6 +31,17 @@ namespace IssueNest
         {
             services.AddControllers();
             services.AddDbContext<IssuesDBContext>();
+            // Cors
+            services.AddCors((options) =>
+            {
+                options.AddPolicy("policy", (policy) =>
+                {
+                    // TODO READ Origin from config 
+                    policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
+                });
+            });
+
+            // AutoMapper: looks for a class inheriting Profile
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //services.AddSingleton<IssuesManager>();
@@ -49,6 +60,7 @@ namespace IssueNest
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors("policy");
 
             app.UseAuthorization();
 

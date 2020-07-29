@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using IssueNest.Data;
 using IssueNest.Models;
 using IssueNest.Services;
@@ -17,12 +18,14 @@ namespace IssueNest.Controllers
     public class UserAuthController : ControllerBase
     {
         private IssuesDBContext db;
-        IUserAuthService userAuth;
+        private IUserAuthService userAuth;
+        private IMapper _mapper;
 
-        public UserAuthController(IssuesDBContext db, IUserAuthService userAuth)
+        public UserAuthController(IssuesDBContext db, IUserAuthService userAuth, IMapper mapper)
         {
             this.db = db;
             this.userAuth = userAuth;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -36,6 +39,7 @@ namespace IssueNest.Controllers
             JsonElement.ObjectEnumerator enumerator = payload.EnumerateObject();
             if (enumerator.Count() > 1)
             {
+                Console.WriteLine(payload.GetRawText());
                 // Getting json payload (email, password)
                 string email = null, password = null;
                 foreach (JsonProperty prop in enumerator)
@@ -64,7 +68,7 @@ namespace IssueNest.Controllers
                         cookie.Expires = DateTime.Now.AddHours(1);
                         Response.Cookies.Append("userId", $"{user.Id}", cookie);
 
-                        return Ok();
+                        return Ok(_mapper.Map<UserReadDTO>(user));
                     }
 
                     return Unauthorized();
