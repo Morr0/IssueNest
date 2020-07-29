@@ -16,6 +16,9 @@ namespace IssueNest.Utils
 
             CreateMap<ProjectWriteDTO, Project>();
             CreateMap<Project, ProjectReadDTO>();
+
+            CreateMap<IssueWriteDTO, Issue>();
+            CreateMap<Issue, IssueReadDTO>();
         }
     }
 }

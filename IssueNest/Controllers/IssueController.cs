@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using AutoMapper;
 using IssueNest.Data;
 using IssueNest.Models;
 using IssueNest.Services;
@@ -20,11 +21,13 @@ namespace IssueNest.Controllers
     {
         private IssuesDBContext db;
         private IssuesManager manager;
+        private IMapper _mapper;
 
-        public IssueController(IssuesDBContext db)
+        public IssueController(IssuesDBContext db, IMapper mapper)
         {
             this.db = db;
             //this.manager = manager;
+            _mapper = mapper;
         }
 
         [HttpGet("{projectId}/{issueId}")]
@@ -33,7 +36,7 @@ namespace IssueNest.Controllers
             Issue issue = await db.Issues.FirstOrDefaultAsync(p => p.ProjectId == projectId && p.Id == issueId);
             if (issue != null)
             {
-                return Ok(issue);
+                return Ok(_mapper.Map<IssueReadDTO>(issue));
             }
 
             return NotFound();
@@ -47,7 +50,7 @@ namespace IssueNest.Controllers
 
             List<Issue> list = await db.Issues.Where(p => p.ProjectId == projectId)
                 .ToListAsync();
-            return Ok(list);
+            return Ok(_mapper.Map<List<IssueReadDTO>>(list));
         }
     }
 }
