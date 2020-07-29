@@ -1,26 +1,36 @@
 <template>
     <div id="app">
         <Login v-if="!loggedIn" />
-        <button type="button" v-if="loggedIn" @click.prevent="logout">Logout</button>
-
         <div v-if="loggedIn">
-            Projects
-            <!-- <Projects /> -->
+            {{user.name}} | 
+            <button type="buttton" @click.prevent="currentView='Projects'">Projects</button> | 
+            <button type="button" @click.prevent="currentView='Integrations'">Integrations</button> | 
+            <button type="button" @click.prevent="logout">Logout</button>
+            <br>
+
+            <keep-alive>
+                <component :is="currentView" :user="user"></component>
+            </keep-alive>
+            
         </div>
     </div>
 </template>
 
 <script>
 import Login from "@/views/Login.vue";
+import Projects from "@/views/Projects.vue";
+import Integrations from "@/views/Integrations.vue";
 
 export default {
     components: {
-        Login
+        Login,
+        Projects,
+        Integrations
     },
     data(){
         document.state = this.$store.state;
         return {
-            currentView: "home",
+            currentView: "Projects",
         };
     },
     computed: {
@@ -49,7 +59,7 @@ export default {
 
             // logout in any case
             this.$store.commit("setUser", undefined)
-        }
+        },
     }
 }
 </script>

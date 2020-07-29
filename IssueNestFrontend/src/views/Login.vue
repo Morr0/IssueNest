@@ -25,7 +25,6 @@ export default {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "Access-Control-Allow-Origin"
                 },
                 body: JSON.stringify({
                     email: this.email,
@@ -35,7 +34,6 @@ export default {
             });
             if (res.status === 200){
                 const data = await res.json();
-                console.log(data);
                 return this.$store.commit("setUser", data);
             } 
             else if (res.status === 400)
