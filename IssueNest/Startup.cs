@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
+using dotenv.net.DependencyInjection.Microsoft;
 using IssueNest.Data;
 using IssueNest.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace IssueNest
 {
@@ -31,6 +25,7 @@ namespace IssueNest
         {
             services.AddControllers();
             services.AddDbContext<IssuesDBContext>();
+            services.AddHttpClient();
             // Cors
             services.AddCors((options) =>
             {
@@ -40,6 +35,11 @@ namespace IssueNest
                     policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
                 });
             });
+
+            // .env reader from dotenv.net && dotenv.net.DependencyInjection.Microsoft
+            services.AddEnv();
+            services.AddEnvReader();
+
 
             // AutoMapper: looks for a class inheriting Profile
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

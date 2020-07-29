@@ -26,7 +26,6 @@ namespace IssueNest.Models
         [NotNull]
         public string Hook { get; set; }
 
-
         public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 

@@ -28,6 +28,10 @@ namespace IssueNest.Models
         public string Password { get; set; }
 
         public DateTime Timestamp { get; set; } = DateTime.Now;
+
+        // Github specific
+        //[NotNull]
+        //public string GithubOAuthToken { get; set; }
     }
 
     public class UserWriteDto
@@ -41,6 +45,8 @@ namespace IssueNest.Models
         [NotNull]
         [Required]
         public string Password { get; set; }
+        //[NotNull]
+        //public string GithubOAuthToken { get; set; }
     }
     public class UserReadDTO
     {
@@ -48,5 +54,6 @@ namespace IssueNest.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public DateTime Timestamp { get; set; }
+        //public string GithubOAuthToken { get; set; }
     }
 }

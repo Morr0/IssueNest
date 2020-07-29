@@ -33,6 +33,22 @@ export default {
             currentView: "Projects",
         };
     },
+    created(){
+        if (this.$route.query.callback && this.$route.query.code){
+            console.log("From Github");
+            fetch("https://localhost:5001/api/oauth/github", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    code: this.$route.query.code,
+                }),
+            }).then(async (res) => {
+                console.log(res.statusText);
+            });
+        }
+    },
     computed: {
         user: function (){
             return this.$store.state.user;
